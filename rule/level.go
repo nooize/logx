@@ -1,23 +1,23 @@
 package rule
 
 import (
-	"github.com/nooize/ltt"
+	"github.com/nooize/lwr"
 )
 
-func LevelGreater(level ltt.Level) ltt.Rule {
-	return func(e ltt.Event) bool {
+func LevelGreater(level lwr.Level) lwr.Rule {
+	return func(e lwr.Event) bool {
 		return level > e.Level()
 	}
 }
 
-func LevelLower(level ltt.Level) ltt.Rule {
-	return func(e ltt.Event) bool {
+func LevelLower(level lwr.Level) lwr.Rule {
+	return func(e lwr.Event) bool {
 		return level < e.Level()
 	}
 }
 
-func Level(levels ...ltt.Level) ltt.Rule {
-	return func(e ltt.Event) bool {
+func Level(levels ...lwr.Level) lwr.Rule {
+	return func(e lwr.Event) bool {
 		for _, v := range levels {
 			if v == e.Level() {
 				return true

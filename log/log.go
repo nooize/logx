@@ -2,9 +2,9 @@ package log
 
 import (
 	"context"
-	"github.com/nooize/ltt"
-	"github.com/nooize/ltt/rule"
-	"github.com/nooize/ltt/target"
+	"github.com/nooize/lwr"
+	"github.com/nooize/lwr/rule"
+	"github.com/nooize/lwr/target"
 )
 
 const (
@@ -15,18 +15,18 @@ const (
 )
 
 var (
-	rootMux ltt.Mux
+	rootMux lwr.Mux
 )
 
-func Append(target ltt.Target, rule ltt.Rule) {
+func Append(target lwr.Target, rule lwr.Rule) {
 	rootMux.Append(target, rule)
 }
 
-func Log(ctx context.Context) ltt.Logger {
+func Log(ctx context.Context) lwr.Logger {
 	return rootMux.Ctx(ctx)
 }
 
-func With(key string, v interface{}) ltt.Logger {
+func With(key string, v interface{}) lwr.Logger {
 	return rootMux.Log().With(key, v)
 }
 
@@ -62,6 +62,6 @@ func Fatal(msg string, options ...interface{}) {
 }
 
 func init() {
-	rootMux = ltt.New()
+	rootMux = lwr.New()
 	rootMux.Append(target.ToStderr(), rule.True())
 }

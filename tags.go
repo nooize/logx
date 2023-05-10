@@ -1,4 +1,4 @@
-package ltt
+package lwr
 
 type Tags struct {
 	parent *Tags

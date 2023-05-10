@@ -1,11 +1,11 @@
 package target
 
 import (
-	"github.com/nooize/ltt"
+	"github.com/nooize/lwr"
 	"sync"
 )
 
-func Rotator(targets ...ltt.Target) ltt.Target {
+func Rotator(targets ...lwr.Target) lwr.Target {
 	trg := &rotateTarget{
 		targets: targets,
 		cursor:  0,
@@ -18,12 +18,12 @@ func Rotator(targets ...ltt.Target) ltt.Target {
 }
 
 type rotateTarget struct {
-	targets []ltt.Target
+	targets []lwr.Target
 	cursor  int
 	lock    sync.Mutex
 }
 
-func (rt *rotateTarget) Handle(e ltt.Event) error {
+func (rt *rotateTarget) Handle(e lwr.Event) error {
 	if rt.cursor < 0 {
 		return nil
 	}

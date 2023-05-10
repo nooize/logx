@@ -1,14 +1,14 @@
 package target
 
 import (
-	"github.com/nooize/ltt"
+	"github.com/nooize/lwr"
 	"os"
 )
 
-func ToStderr() ltt.Target {
+func ToStderr() lwr.Target {
 	return &writerTarget{prefix: "STDERR: ", out: os.Stderr}
 }
 
-func ToStdout() ltt.Target {
+func ToStdout() lwr.Target {
 	return &writerTarget{prefix: "STDOUT: ", out: os.Stdout}
 }

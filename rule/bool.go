@@ -1,11 +1,11 @@
 package rule
 
 import (
-	"github.com/nooize/ltt"
+	"github.com/nooize/lwr"
 )
 
-func And(rules ...ltt.Rule) ltt.Rule {
-	return func(e ltt.Event) bool {
+func And(rules ...lwr.Rule) lwr.Rule {
+	return func(e lwr.Event) bool {
 		res := true
 		for _, rule := range rules {
 			res = res && rule(e)
@@ -14,8 +14,8 @@ func And(rules ...ltt.Rule) ltt.Rule {
 	}
 }
 
-func Or(rules ...ltt.Rule) ltt.Rule {
-	return func(e ltt.Event) bool {
+func Or(rules ...lwr.Rule) lwr.Rule {
+	return func(e lwr.Event) bool {
 		res := false
 		for _, rule := range rules {
 			res = res || rule(e)
@@ -24,20 +24,20 @@ func Or(rules ...ltt.Rule) ltt.Rule {
 	}
 }
 
-func Not(rule ltt.Rule) ltt.Rule {
-	return func(e ltt.Event) bool {
+func Not(rule lwr.Rule) lwr.Rule {
+	return func(e lwr.Event) bool {
 		return !rule(e)
 	}
 }
 
-func True() ltt.Rule {
-	return func(_ ltt.Event) bool {
+func True() lwr.Rule {
+	return func(_ lwr.Event) bool {
 		return true
 	}
 }
 
-func False() ltt.Rule {
-	return func(_ ltt.Event) bool {
+func False() lwr.Rule {
+	return func(_ lwr.Event) bool {
 		return false
 	}
 }

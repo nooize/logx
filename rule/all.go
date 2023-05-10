@@ -1,10 +1,10 @@
 package rule
 
 import (
-	"github.com/nooize/ltt"
+	"github.com/nooize/lwr"
 	"time"
 )
 
-func Any(t time.Time, l ltt.Level, msg string, tags *ltt.Tags) bool {
+func Any(t time.Time, l lwr.Level, msg string, tags *lwr.Tags) bool {
 	return true
 }

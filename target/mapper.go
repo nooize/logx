@@ -1,8 +1,8 @@
 package target
 
-import "github.com/nooize/ltt"
+import "github.com/nooize/lwr"
 
-func LevelMapper(next ltt.Target, mapping func(ltt.Level) ltt.Level) ltt.Target {
+func LevelMapper(next lwr.Target, mapping func(lwr.Level) lwr.Level) lwr.Target {
 	trg := &levelMapperTarget{
 		next:    next,
 		mapping: mapping,
@@ -11,11 +11,11 @@ func LevelMapper(next ltt.Target, mapping func(ltt.Level) ltt.Level) ltt.Target 
 }
 
 type levelMapperTarget struct {
-	next    ltt.Target
-	mapping func(ltt.Level) ltt.Level
+	next    lwr.Target
+	mapping func(lwr.Level) lwr.Level
 }
 
-func (ct *levelMapperTarget) Handle(e ltt.Event) error {
+func (ct *levelMapperTarget) Handle(e lwr.Event) error {
 	// TODO implement
 	return ct.next.Handle(e)
 }

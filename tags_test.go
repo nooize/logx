@@ -1,4 +1,4 @@
-package ltt
+package lwr
 
 import "testing"
 

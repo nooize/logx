@@ -1,4 +1,4 @@
-# LTT - structured logger with routing
+# LWR - logger with routing, structured & customized
 
 ## Getting Started
 

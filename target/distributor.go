@@ -2,20 +2,20 @@ package target
 
 import (
 	"errors"
-	"github.com/nooize/ltt"
+	"github.com/nooize/lwr"
 )
 
-func Distributor(targets ...ltt.Target) (ltt.Target, error) {
+func Distributor(targets ...lwr.Target) (lwr.Target, error) {
 	return &distributeTarget{
 		targets: targets,
 	}, nil
 }
 
 type distributeTarget struct {
-	targets []ltt.Target
+	targets []lwr.Target
 }
 
-func (dt *distributeTarget) Handle(e ltt.Event) (out error) {
+func (dt *distributeTarget) Handle(e lwr.Event) (out error) {
 	for _, trg := range dt.targets {
 		if err := trg.Handle(e); err != nil {
 			// TODO fix message

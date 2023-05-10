@@ -1,4 +1,4 @@
-module github.com/nooize/ltt
+module github.com/nooize/lwr
 
 go 1.18
 
