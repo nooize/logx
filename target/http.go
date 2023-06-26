@@ -5,6 +5,6 @@ import (
 	"net/url"
 )
 
-func ToHttp(url url.URL) (lwr.Target, error) {
+func ToHttp(url url.URL) (lux.Target, error) {
 	return &writerTarget{}, nil
 }

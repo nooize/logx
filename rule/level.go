@@ -4,20 +4,20 @@ import (
 	"github.com/nooize/lux"
 )
 
-func LevelGreater(level lwr.Level) lwr.Rule {
-	return func(e lwr.Event) bool {
+func LevelGreater(level lux.Level) lux.Rule {
+	return func(e lux.Event) bool {
 		return level > e.Level()
 	}
 }
 
-func LevelLower(level lwr.Level) lwr.Rule {
-	return func(e lwr.Event) bool {
+func LevelLower(level lux.Level) lux.Rule {
+	return func(e lux.Event) bool {
 		return level < e.Level()
 	}
 }
 
-func Level(levels ...lwr.Level) lwr.Rule {
-	return func(e lwr.Event) bool {
+func Level(levels ...lux.Level) lux.Rule {
+	return func(e lux.Event) bool {
 		for _, v := range levels {
 			if v == e.Level() {
 				return true

@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-func Rotator(targets ...lwr.Target) lwr.Target {
+func Rotator(targets ...lux.Target) lux.Target {
 	trg := &rotateTarget{
 		targets: targets,
 		cursor:  0,
@@ -18,12 +18,12 @@ func Rotator(targets ...lwr.Target) lwr.Target {
 }
 
 type rotateTarget struct {
-	targets []lwr.Target
+	targets []lux.Target
 	cursor  int
 	lock    sync.Mutex
 }
 
-func (rt *rotateTarget) Handle(e lwr.Event) error {
+func (rt *rotateTarget) Handle(e lux.Event) error {
 	if rt.cursor < 0 {
 		return nil
 	}

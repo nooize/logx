@@ -1,4 +1,4 @@
-package lwr
+package lux
 
 import (
 	"crypto"

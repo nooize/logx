@@ -8,18 +8,18 @@ import (
 )
 
 var (
-	rootMux lwr.Mux
+	rootMux lux.Mux
 )
 
-func Append(target lwr.Target, rule lwr.Rule) {
+func Append(target lux.Target, rule lux.Rule) {
 	rootMux.Append(target, rule)
 }
 
-func WithContext(ctx context.Context) lwr.Logger {
+func WithContext(ctx context.Context) lux.Logger {
 	return rootMux.Ctx(ctx)
 }
 
-func With(key string, v interface{}) lwr.Logger {
+func With(key string, v interface{}) lux.Logger {
 	return rootMux.Log().With(key, v)
 }
 
@@ -55,6 +55,6 @@ func Fatal(msg string, options ...interface{}) {
 }
 
 func init() {
-	rootMux = lwr.New()
+	rootMux = lux.New()
 	rootMux.Append(target.ToStderr(), rule.True())
 }

@@ -2,7 +2,7 @@ package target
 
 import "github.com/nooize/lux"
 
-func Сondition(first, second lwr.Target, rule lwr.Rule) lwr.Target {
+func Сondition(first, second lux.Target, rule lux.Rule) lux.Target {
 	return &conditionTarget{
 		first:  first,
 		second: second,
@@ -11,12 +11,12 @@ func Сondition(first, second lwr.Target, rule lwr.Rule) lwr.Target {
 }
 
 type conditionTarget struct {
-	first  lwr.Target
-	second lwr.Target
-	rule   lwr.Rule
+	first  lux.Target
+	second lux.Target
+	rule   lux.Rule
 }
 
-func (ct *conditionTarget) Handle(e lwr.Event) error {
+func (ct *conditionTarget) Handle(e lux.Event) error {
 	if ct.rule(e) {
 		return ct.first.Handle(e)
 	}

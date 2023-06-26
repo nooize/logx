@@ -5,6 +5,6 @@ import (
 	"time"
 )
 
-func Any(t time.Time, l lwr.Level, msg string, tags *lwr.Tags) bool {
+func Any(t time.Time, l lux.Level, msg string, tags *lux.Tags) bool {
 	return true
 }

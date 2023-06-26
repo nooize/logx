@@ -4,15 +4,15 @@ import (
 	"github.com/nooize/lux"
 )
 
-func TagEquals(key string, v any) lwr.Rule {
-	return func(e lwr.Event) bool {
+func TagEquals(key string, v any) lux.Rule {
+	return func(e lux.Event) bool {
 		i := e.Tags().Value(key)
 		return i == v
 	}
 }
 
-func TagOneOf(key string, v ...any) lwr.Rule {
-	return func(e lwr.Event) bool {
+func TagOneOf(key string, v ...any) lux.Rule {
+	return func(e lux.Event) bool {
 		i := e.Tags().Value(key)
 		ok := false
 		for _, v := range v {
@@ -22,8 +22,8 @@ func TagOneOf(key string, v ...any) lwr.Rule {
 	}
 }
 
-func TagExists(key string) lwr.Rule {
-	return func(e lwr.Event) bool {
+func TagExists(key string) lux.Rule {
+	return func(e lux.Event) bool {
 		return e.Tags().Value(key) != nil
 	}
 }

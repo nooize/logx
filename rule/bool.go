@@ -4,8 +4,8 @@ import (
 	"github.com/nooize/lux"
 )
 
-func And(rules ...lwr.Rule) lwr.Rule {
-	return func(e lwr.Event) bool {
+func And(rules ...lux.Rule) lux.Rule {
+	return func(e lux.Event) bool {
 		for _, rule := range rules {
 			if !rule(e) {
 				return false
@@ -16,8 +16,8 @@ func And(rules ...lwr.Rule) lwr.Rule {
 	}
 }
 
-func Or(rules ...lwr.Rule) lwr.Rule {
-	return func(e lwr.Event) bool {
+func Or(rules ...lux.Rule) lux.Rule {
+	return func(e lux.Event) bool {
 		for _, rule := range rules {
 			if rule(e) {
 				return true
@@ -27,20 +27,20 @@ func Or(rules ...lwr.Rule) lwr.Rule {
 	}
 }
 
-func Not(rule lwr.Rule) lwr.Rule {
-	return func(e lwr.Event) bool {
+func Not(rule lux.Rule) lux.Rule {
+	return func(e lux.Event) bool {
 		return !rule(e)
 	}
 }
 
-func True() lwr.Rule {
-	return func(_ lwr.Event) bool {
+func True() lux.Rule {
+	return func(_ lux.Event) bool {
 		return true
 	}
 }
 
-func False() lwr.Rule {
-	return func(_ lwr.Event) bool {
+func False() lux.Rule {
+	return func(_ lux.Event) bool {
 		return false
 	}
 }

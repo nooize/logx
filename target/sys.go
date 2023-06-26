@@ -5,10 +5,10 @@ import (
 	"os"
 )
 
-func ToStderr() lwr.Target {
+func ToStderr() lux.Target {
 	return &writerTarget{prefix: "STDERR: ", out: os.Stderr}
 }
 
-func ToStdout() lwr.Target {
+func ToStdout() lux.Target {
 	return &writerTarget{prefix: "STDOUT: ", out: os.Stdout}
 }

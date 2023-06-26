@@ -2,7 +2,7 @@ package target
 
 import "github.com/nooize/lux"
 
-func LevelMapper(next lwr.Target, mapping func(lwr.Level) lwr.Level) lwr.Target {
+func LevelMapper(next lux.Target, mapping func(lux.Level) lux.Level) lux.Target {
 	trg := &levelMapperTarget{
 		next:    next,
 		mapping: mapping,
@@ -11,11 +11,11 @@ func LevelMapper(next lwr.Target, mapping func(lwr.Level) lwr.Level) lwr.Target 
 }
 
 type levelMapperTarget struct {
-	next    lwr.Target
-	mapping func(lwr.Level) lwr.Level
+	next    lux.Target
+	mapping func(lux.Level) lux.Level
 }
 
-func (ct *levelMapperTarget) Handle(e lwr.Event) error {
+func (ct *levelMapperTarget) Handle(e lux.Event) error {
 	// TODO implement
 	return ct.next.Handle(e)
 }
