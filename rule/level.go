@@ -1,7 +1,7 @@
 package rule
 
 import (
-	"github.com/nooize/lwr"
+	"github.com/nooize/lux"
 )
 
 func LevelGreater(level lwr.Level) lwr.Rule {

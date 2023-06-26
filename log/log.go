@@ -2,16 +2,9 @@ package log
 
 import (
 	"context"
-	"github.com/nooize/lwr"
-	"github.com/nooize/lwr/rule"
-	"github.com/nooize/lwr/target"
-)
-
-const (
-	ContextHubKey    = "_ltt_hub_"
-	ContextLoggerKey = "_ltt_logger_"
-
-	ErrorStackFieldName = "stack"
+	"github.com/nooize/lux"
+	"github.com/nooize/lux/rule"
+	"github.com/nooize/lux/target"
 )
 
 var (
@@ -22,7 +15,7 @@ func Append(target lwr.Target, rule lwr.Rule) {
 	rootMux.Append(target, rule)
 }
 
-func Log(ctx context.Context) lwr.Logger {
+func WithContext(ctx context.Context) lwr.Logger {
 	return rootMux.Ctx(ctx)
 }
 

@@ -1,7 +1,7 @@
 package target
 
 import (
-	"github.com/nooize/lwr"
+	"github.com/nooize/lux"
 	"os"
 )
 

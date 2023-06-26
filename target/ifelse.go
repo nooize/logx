@@ -1,6 +1,6 @@
 package target
 
-import "github.com/nooize/lwr"
+import "github.com/nooize/lux"
 
 func Сondition(first, second lwr.Target, rule lwr.Rule) lwr.Target {
 	return &conditionTarget{

@@ -1,6 +1,6 @@
 package target
 
-import "github.com/nooize/lwr"
+import "github.com/nooize/lux"
 
 func LevelMapper(next lwr.Target, mapping func(lwr.Level) lwr.Level) lwr.Target {
 	trg := &levelMapperTarget{

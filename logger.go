@@ -3,6 +3,7 @@ package lwr
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"time"
 )
 
@@ -41,9 +42,8 @@ type Logger interface {
 }
 
 type logger struct {
-	level Level
 	tags  *Tags
-	route func(Event) error
+	route func(Event)
 }
 
 func (c *logger) WithContext(ctx context.Context) context.Context {
@@ -54,8 +54,21 @@ func (c *logger) With(key string, v interface{}) Logger {
 	if len(key) == 0 || v == nil {
 		return c
 	}
+	switch reflect.TypeOf(v).Kind() {
+	// functions and channels are not supported as tags
+	case reflect.Func, reflect.Chan:
+		return c
+	// for nil values, we do not add the key to the tags
+	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Slice:
+		if reflect.ValueOf(v).IsNil() {
+			return c
+		}
+	case reflect.Bool, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
+		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128,
+		reflect.String, reflect.Struct:
+	}
 	return &logger{
-		level: c.level,
 		tags: &Tags{
 			parent: c.tags,
 			key:    key,
@@ -65,7 +78,6 @@ func (c *logger) With(key string, v interface{}) Logger {
 	}
 }
 
-// Trace send a new log message with trace level.
 func (c *logger) Trace(msg string, options ...interface{}) {
 	c.send(Trace, msg, options...)
 }

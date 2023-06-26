@@ -12,6 +12,10 @@ const (
 
 type Rule func(Event) bool
 
+type Target interface {
+	Handle(Event) error
+}
+
 // New create new log multiplexer that route log events to one or multiple log targets
 //
 // Mux always have a default target with conditions:
@@ -25,7 +29,7 @@ type Rule func(Event) bool
 func New() Mux {
 	return &mux{
 		tree: &muxEntry{
-			target: &blackHoleTarget{},
+			target: &nullTarget{},
 			match: func(_ Event) bool {
 				return true
 			},

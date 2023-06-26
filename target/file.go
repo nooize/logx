@@ -2,7 +2,7 @@ package target
 
 import (
 	"errors"
-	"github.com/nooize/lwr"
+	"github.com/nooize/lux"
 	"io"
 	"os"
 )

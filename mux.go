@@ -2,7 +2,6 @@ package lwr
 
 import (
 	"context"
-	"errors"
 	"sync"
 )
 
@@ -47,15 +46,15 @@ func (m *mux) Log() Logger {
 	}
 }
 
-func (m *mux) route(e Event) error {
+func (m *mux) route(e Event) {
 	entry := m.tree
 	for entry != nil {
 		if entry.match(e) {
-			return entry.target.Handle(e)
+			go entry.target.Handle(e)
+			return
 		}
 		entry = entry.next
 	}
-	return errors.New("no log target found")
 }
 
 type muxEntry struct {

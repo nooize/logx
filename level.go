@@ -8,8 +8,10 @@ import (
 )
 
 const (
+	// Nop disables the logger.
+	Nop Level = iota
 	// Debug defines debug log level.
-	Debug Level = iota
+	Debug
 	// Info defines info log level.
 	Info
 	// Warning defines warn log level.
@@ -18,17 +20,13 @@ const (
 	Error
 	// Fatal defines fatal log level.
 	Fatal
-	// Nop defines an absent log level.
-	Nop
-	// Disabled disables the logger.
-	Disabled
 
 	// Trace defines trace log level.
 	Trace Level = -1
 	// Values less than TraceLevel are handled as numbers.
 
-	// LevelTrace is the value used for the trace level field.
-	LevelTrace = "trace"
+	// LevelNop is the value used for disabled logger.
+	LevelNop = "-"
 	// LevelDebug is the value used for the debug level field.
 	LevelDebug = "debug"
 	// LevelInfo is the value used for the info level field.
@@ -39,8 +37,6 @@ const (
 	LevelError = "error"
 	// LevelFatal is the value used for the fatal level field.
 	LevelFatal = "fatal"
-	// LevelDisabled is the value used for the fatal level field.
-	LevelDisabled = "disabled"
 )
 
 // Level defines log levels
@@ -48,8 +44,6 @@ type Level int8
 
 func (l Level) String() string {
 	switch l {
-	case Trace:
-		return LevelTrace
 	case Debug:
 		return LevelDebug
 	case Info:
@@ -60,10 +54,8 @@ func (l Level) String() string {
 		return LevelError
 	case Fatal:
 		return LevelFatal
-	case Disabled:
-		return LevelDisabled
 	case Nop:
-		return ""
+		return LevelNop
 	}
 	return strconv.Itoa(int(l))
 }
@@ -87,8 +79,6 @@ func (l Level) MarshalText() ([]byte, error) {
 // returns an error if the input string does not match known values.
 func ParseLevel(levelStr string) (Level, error) {
 	switch {
-	case strings.EqualFold(levelStr, LevelTrace):
-		return Trace, nil
 	case strings.EqualFold(levelStr, LevelDebug):
 		return Debug, nil
 	case strings.EqualFold(levelStr, LevelInfo):
@@ -99,14 +89,12 @@ func ParseLevel(levelStr string) (Level, error) {
 		return Error, nil
 	case strings.EqualFold(levelStr, LevelFatal):
 		return Fatal, nil
-	case strings.EqualFold(levelStr, LevelDisabled):
-		return Disabled, nil
-	case strings.EqualFold(levelStr, ""):
+	case strings.EqualFold(levelStr, LevelNop):
 		return Nop, nil
 	}
 	i, err := strconv.Atoi(levelStr)
 	if err != nil {
-		return Nop, fmt.Errorf("Unknown Level: '%s', set to Nop", levelStr)
+		return Nop, fmt.Errorf("unknown Level: '%s', set to Nop", levelStr)
 	}
 	if i > 127 || i < -128 {
 		return Nop, fmt.Errorf("Out-Of-Bounds Level: '%d', set to Nop", i)

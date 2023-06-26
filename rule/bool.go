@@ -1,26 +1,29 @@
 package rule
 
 import (
-	"github.com/nooize/lwr"
+	"github.com/nooize/lux"
 )
 
 func And(rules ...lwr.Rule) lwr.Rule {
 	return func(e lwr.Event) bool {
-		res := true
 		for _, rule := range rules {
-			res = res && rule(e)
+			if !rule(e) {
+				return false
+			}
+
 		}
-		return res
+		return true
 	}
 }
 
 func Or(rules ...lwr.Rule) lwr.Rule {
 	return func(e lwr.Event) bool {
-		res := false
 		for _, rule := range rules {
-			res = res || rule(e)
+			if rule(e) {
+				return true
+			}
 		}
-		return res
+		return false
 	}
 }
 
