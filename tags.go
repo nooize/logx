@@ -1,9 +1,9 @@
-package lux
+package logx
 
 type Tags struct {
+	val    any
 	parent *Tags
 	key    string
-	val    any
 }
 
 func (t *Tags) Value(key string) any {

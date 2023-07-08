@@ -1,38 +1,61 @@
-package lux
+package logx
 
 import (
 	"context"
+	"golang.org/x/exp/slog"
 	"sync"
 )
 
 // Mux is a log event multiplexer that route log events to one or multiple log targets
 // based on predefined rules,
 type Mux interface {
-	Ctx(ctx context.Context) Logger
-	Append(Target, Rule) Mux
-	Log() Logger
+	slog.Handler
+	AppendHandler(slog.Handler, Rule) Mux
+	Logger() *slog.Logger
 }
 
-type mux struct {
+type muxHandler struct {
 	tree *muxEntry
 	lock sync.Mutex
 }
 
-func (m *mux) Ctx(ctx context.Context) Logger {
-	if v := ctx.Value(ContextLoggerKey); v != nil {
-		if l, ok := v.(Logger); ok {
-			return l
-		}
-	}
-	return m.Log()
+// implement slog.Handler interface
+
+func (m *muxHandler) Enabled(ctx context.Context, lev slog.Level) bool {
+	return true
 }
 
-func (m *mux) Append(target Target, rule Rule) Mux {
-	if target != nil && rule != nil {
+func (m *muxHandler) Handle(ctx context.Context, rec slog.Record) error {
+	entry := m.tree
+	for entry != nil {
+		if entry.match(rec) {
+			return entry.target.Handle(ctx, rec)
+		}
+		entry = entry.next
+	}
+	return nil
+}
+
+func (m *muxHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	return m
+}
+
+func (m *muxHandler) WithGroup(name string) slog.Handler {
+	return m
+}
+
+// implement Mux interface
+
+func (m *muxHandler) Logger() *slog.Logger {
+	return slog.New(m)
+}
+
+func (m *muxHandler) AppendHandler(hand slog.Handler, rule Rule) Mux {
+	if hand != nil && rule != nil {
 		m.lock.Lock()
 		m.tree = &muxEntry{
 			next:   m.tree,
-			target: target,
+			target: hand,
 			match:  rule,
 		}
 		m.lock.Unlock()
@@ -40,25 +63,8 @@ func (m *mux) Append(target Target, rule Rule) Mux {
 	return m
 }
 
-func (m *mux) Log() Logger {
-	return &logger{
-		route: m.route,
-	}
-}
-
-func (m *mux) route(e Event) {
-	entry := m.tree
-	for entry != nil {
-		if entry.match(e) {
-			go entry.target.Handle(e)
-			return
-		}
-		entry = entry.next
-	}
-}
-
 type muxEntry struct {
 	next   *muxEntry
-	target Target
+	target slog.Handler
 	match  Rule
 }

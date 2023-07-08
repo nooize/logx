@@ -1,11 +1,12 @@
 package rule
 
 import (
-	"github.com/nooize/lux"
+	"github.com/nooize/logx"
+	"golang.org/x/exp/slog"
 )
 
-func And(rules ...lux.Rule) lux.Rule {
-	return func(e lux.Event) bool {
+func And(rules ...logx.Rule) logx.Rule {
+	return func(e slog.Record) bool {
 		for _, rule := range rules {
 			if !rule(e) {
 				return false
@@ -16,8 +17,8 @@ func And(rules ...lux.Rule) lux.Rule {
 	}
 }
 
-func Or(rules ...lux.Rule) lux.Rule {
-	return func(e lux.Event) bool {
+func Or(rules ...logx.Rule) logx.Rule {
+	return func(e slog.Record) bool {
 		for _, rule := range rules {
 			if rule(e) {
 				return true
@@ -27,20 +28,22 @@ func Or(rules ...lux.Rule) lux.Rule {
 	}
 }
 
-func Not(rule lux.Rule) lux.Rule {
-	return func(e lux.Event) bool {
-		return !rule(e)
+func Not(rule logx.Rule) logx.Rule {
+	return func(rec slog.Record) bool {
+		return !rule(rec)
 	}
 }
 
-func True() lux.Rule {
-	return func(_ lux.Event) bool {
-		return true
+func Bool(v bool) logx.Rule {
+	return func(_ slog.Record) bool {
+		return v
 	}
 }
 
-func False() lux.Rule {
-	return func(_ lux.Event) bool {
-		return false
-	}
+func True() logx.Rule {
+	return Bool(true)
+}
+
+func False() logx.Rule {
+	return Bool(false)
 }

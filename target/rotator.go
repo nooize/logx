@@ -1,12 +1,14 @@
 package target
 
 import (
-	"github.com/nooize/lux"
+	"context"
+	"github.com/nooize/logx"
+	"golang.org/x/exp/slog"
 	"sync"
 )
 
-func Rotator(targets ...lux.Target) lux.Target {
-	trg := &rotateTarget{
+func Rotator(targets ...slog.Handler) slog.Handler {
+	trg := &rotateHandler{
 		targets: targets,
 		cursor:  0,
 		lock:    sync.Mutex{},
@@ -17,13 +19,14 @@ func Rotator(targets ...lux.Target) lux.Target {
 	return trg
 }
 
-type rotateTarget struct {
-	targets []lux.Target
+type rotateHandler struct {
+	logx.BaseHandler
+	targets []slog.Handler
 	cursor  int
 	lock    sync.Mutex
 }
 
-func (rt *rotateTarget) Handle(e lux.Event) error {
+func (rt *rotateHandler) Handle(ctx context.Context, rec slog.Record) error {
 	if rt.cursor < 0 {
 		return nil
 	}
@@ -34,5 +37,5 @@ func (rt *rotateTarget) Handle(e lux.Event) error {
 		rt.cursor = 0
 	}
 	rt.lock.Unlock()
-	return target.Handle(e)
+	return target.Handle(ctx, rec)
 }

@@ -1,4 +1,4 @@
-package lux
+package logx
 
 import (
 	"context"

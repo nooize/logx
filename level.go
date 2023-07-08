@@ -1,4 +1,4 @@
-package lux
+package logx
 
 import (
 	"errors"
@@ -28,15 +28,15 @@ const (
 	// LevelNop is the value used for disabled logger.
 	LevelNop = "-"
 	// LevelDebug is the value used for the debug level field.
-	LevelDebug = "debug"
+	LevelDebug = "DEBUG"
 	// LevelInfo is the value used for the info level field.
-	LevelInfo = "info"
+	LevelInfo = "INFO"
 	// LevelWarning is the value used for the warn level field.
-	LevelWarning = "warning"
+	LevelWarning = "WARNING"
 	// LevelError is the value used for the error level field.
-	LevelError = "error"
+	LevelError = "ERROR"
 	// LevelFatal is the value used for the fatal level field.
-	LevelFatal = "fatal"
+	LevelFatal = "FATAL"
 )
 
 // Level defines log levels

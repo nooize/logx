@@ -1,6 +1,7 @@
-package lux
+package logx
 
 import (
+	"golang.org/x/exp/slog"
 	"sync"
 )
 
@@ -10,10 +11,10 @@ const (
 	ErrorStackFieldName = "stack"
 )
 
-type Rule func(Event) bool
+type Rule func(record slog.Record) bool
 
 type Target interface {
-	Handle(Event) error
+	Handle(slog.Record) error
 }
 
 // New create new log multiplexer that route log events to one or multiple log targets
@@ -25,12 +26,12 @@ type Target interface {
 // this route always reached when no other route matched
 // Example:
 //
-//	mux := ltt.New()
+//	muxHandler := ltt.New()
 func New() Mux {
-	return &mux{
+	return &muxHandler{
 		tree: &muxEntry{
 			target: &nullTarget{},
-			match: func(_ Event) bool {
+			match: func(_ slog.Record) bool {
 				return true
 			},
 		},

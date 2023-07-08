@@ -1,4 +1,4 @@
-package lux
+package logx
 
 import "time"
 
@@ -13,9 +13,9 @@ type EventMutator func(Event) (Level, string, *Tags)
 
 type event struct {
 	time  time.Time
-	level Level
 	tags  *Tags
 	msg   string
+	level Level
 }
 
 func (e *event) Time() time.Time {

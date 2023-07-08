@@ -1,8 +1,12 @@
 package target
 
-import "github.com/nooize/lux"
+import (
+	"context"
+	"github.com/nooize/logx"
+	"golang.org/x/exp/slog"
+)
 
-func Сondition(first, second lux.Target, rule lux.Rule) lux.Target {
+func Сondition(first, second slog.Handler, rule logx.Rule) slog.Handler {
 	return &conditionTarget{
 		first:  first,
 		second: second,
@@ -11,14 +15,15 @@ func Сondition(first, second lux.Target, rule lux.Rule) lux.Target {
 }
 
 type conditionTarget struct {
-	first  lux.Target
-	second lux.Target
-	rule   lux.Rule
+	logx.BaseHandler
+	first  slog.Handler
+	second slog.Handler
+	rule   logx.Rule
 }
 
-func (ct *conditionTarget) Handle(e lux.Event) error {
-	if ct.rule(e) {
-		return ct.first.Handle(e)
+func (ct *conditionTarget) Handle(ctx context.Context, rec slog.Record) error {
+	if ct.rule(rec) {
+		return ct.first.Handle(ctx, rec)
 	}
-	return ct.second.Handle(e)
+	return ct.second.Handle(ctx, rec)
 }

@@ -1,8 +1,12 @@
 package target
 
-import "github.com/nooize/lux"
+import (
+	"context"
+	"github.com/nooize/logx"
+	"golang.org/x/exp/slog"
+)
 
-func LevelMapper(next lux.Target, mapping func(lux.Level) lux.Level) lux.Target {
+func LevelMapper(next slog.Handler, mapping func(slog.Level) slog.Level) slog.Handler {
 	trg := &levelMapperTarget{
 		next:    next,
 		mapping: mapping,
@@ -11,11 +15,12 @@ func LevelMapper(next lux.Target, mapping func(lux.Level) lux.Level) lux.Target 
 }
 
 type levelMapperTarget struct {
-	next    lux.Target
-	mapping func(lux.Level) lux.Level
+	logx.BaseHandler
+	next    slog.Handler
+	mapping func(slog.Level) slog.Level
 }
 
-func (ct *levelMapperTarget) Handle(e lux.Event) error {
+func (ct *levelMapperTarget) Handle(ctx context.Context, rec slog.Record) error {
 	// TODO implement
-	return ct.next.Handle(e)
+	return ct.next.Handle(ctx, rec)
 }

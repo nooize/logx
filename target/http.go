@@ -1,10 +1,10 @@
 package target
 
 import (
-	"github.com/nooize/lux"
+	"golang.org/x/exp/slog"
 	"net/url"
 )
 
-func ToHttp(url url.URL) (lux.Target, error) {
+func ToHttp(url url.URL) (slog.Handler, error) {
 	return &writerTarget{}, nil
 }

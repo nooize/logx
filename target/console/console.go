@@ -2,14 +2,17 @@ package console
 
 import (
 	"bytes"
-	"io"
+	"context"
+	"github.com/fatih/color"
+	"golang.org/x/exp/slog"
 	"os"
 	"sync"
 	"time"
 )
 
 const (
-	consoleDefaultTimeFormat = time.Kitchen
+	DefaultFormat     = "%T %L %M %A"
+	DefaultTimeFormat = time.DateTime
 )
 
 var (
@@ -18,122 +21,95 @@ var (
 			return bytes.NewBuffer(make([]byte, 0, 100))
 		},
 	}
+	timeCol = color.New(color.FgWhite)
+	errCol  = color.New(color.FgRed)
+	wrnCol  = color.New(color.FgYellow)
+	infCol  = color.New(color.FgCyan)
+	dbgCol  = color.New(color.FgHiMagenta)
+	tagCol  = color.New(color.FgGreen)
+	darkCol = color.New(color.FgHiBlack)
 )
 
-func NewConsoleTarget() ltt.Target {
-	t := ConsoleTarget{
-		Out:        os.Stdout,
-		TimeFormat: consoleDefaultTimeFormat,
-		Tags:       []string{},
+type TargetOption func(*consoleHandler)
+
+func NewConsoleHandler(options ...TargetOption) slog.Handler {
+	t := &consoleHandler{
+		separator:  []byte(" "),
+		timeFormat: DefaultTimeFormat,
 	}
-
-	//for _, opt := range options {
-	//	opt(&w)
-	//}
-
-	// Fix color on Windows
-	if t.Out == os.Stdout || t.Out == os.Stderr {
-		t.Out = colorable.NewColorable(t.Out.(*os.File))
+	t.Handler = slog.NewTextHandler(os.Stdout, nil)
+	time.Now().Format(t.timeFormat)
+	for _, opt := range options {
+		opt(t)
 	}
-
 	return t
 }
 
-type ConsoleTarget struct {
-	// Out is the output destination.
-	Out io.Writer
+type consoleHandler struct {
+	slog.Handler
 
-	// TimeFormat specifies the format for timestamp in output.
-	TimeFormat string
-
-	// Tags defines the order of parts in output.
-	// if is empty then all not listed tags wil be skipped.
-	Tags []string
+	separator  []byte
+	colored    bool
+	timeFormat string
 }
 
-// Write transforms the JSON input with formatters and appends to w.Out.
-func (t ConsoleTarget) Handle(time.Time, ltt.Level, string, *ltt.Tags) error {
+// implement slog.Handler interface
+
+func (h *consoleHandler) Handle(ctx context.Context, rec slog.Record) error {
 	// Fix color on Windows
-	if t.Out == os.Stdout || t.Out == os.Stderr {
-		t.Out = colorable.NewColorable(t.Out.(*os.File))
+
+	buf := new(bytes.Buffer)
+	h.writeTime(buf, rec.Time)
+	buf.Write(h.separator)
+	h.writeLevel(buf, rec.Level)
+	buf.Write(h.separator)
+	h.writeMsg(buf, rec.Message)
+	if rec.NumAttrs() > 0 {
+		buf.Write(h.separator)
 	}
+	rec.Attrs(func(attr slog.Attr) bool {
+		h.writeTag(buf, attr)
+		return true
+	})
+	buf.Write([]byte("\n"))
 
-	//if w.PartsOrder == nil {
-	//	w.PartsOrder = consoleDefaultPartsOrder()
-	//}
-
-	var buf = consoleBufPool.Get().(*bytes.Buffer)
-	defer func() {
-		buf.Reset()
-		consoleBufPool.Put(buf)
-	}()
-
-	var evt map[string]interface{}
-
-	for _, p := range w.PartsOrder {
-		t.writePart(buf, evt, p)
-	}
-
-	w.writeFields(evt, buf)
-
-	if w.FormatExtra != nil {
-		err = w.FormatExtra(evt, buf)
-		if err != nil {
-			return n, err
-		}
-	}
-
-	err := buf.WriteByte('\n')
-	if err != nil {
-		return err
-	}
-	_, err = buf.WriteTo(t.Out)
+	_, err := buf.WriteTo(h.out)
 	return err
 }
 
-// writePart appends a formatted part to buf.
-func (t ConsoleTarget) writePart(buf *bytes.Buffer, evt map[string]interface{}, p string) {
-	var f Formatter
+func (m *consoleHandler) writeTime(buf *bytes.Buffer, t time.Time) {
+	buf.WriteString(timeCol.Sprint(t.Format(m.timeFormat)))
+}
 
-	switch p {
-	case LevelFieldName:
-		if w.FormatLevel == nil {
-			f = consoleDefaultFormatLevel(w.NoColor)
-		} else {
-			f = w.FormatLevel
-		}
-	case TimestampFieldName:
-		if w.FormatTimestamp == nil {
-			f = consoleDefaultFormatTimestamp(w.TimeFormat, w.NoColor)
-		} else {
-			f = w.FormatTimestamp
-		}
-	case MessageFieldName:
-		if w.FormatMessage == nil {
-			f = consoleDefaultFormatMessage
-		} else {
-			f = w.FormatMessage
-		}
-	case CallerFieldName:
-		if w.FormatCaller == nil {
-			f = consoleDefaultFormatCaller(w.NoColor)
-		} else {
-			f = w.FormatCaller
-		}
+func (m *consoleHandler) writeLevel(buf *bytes.Buffer, l slog.Level) {
+	switch l {
+	//case lux.Trace:
+	//	buf.WriteString("TRC")
+	case slog.LevelDebug:
+		dbgCol.Fprint(buf, "DBG")
+	case slog.LevelInfo:
+		infCol.Fprint(buf, "INF")
+	case slog.LevelWarn:
+		wrnCol.Fprint(buf, "WRN")
+	case slog.LevelError:
+		errCol.Fprint(buf, "ERR")
 	default:
-		if w.FormatFieldValue == nil {
-			f = consoleDefaultFormatFieldValue
-		} else {
-			f = w.FormatFieldValue
-		}
+		timeCol.Fprint(buf, "-?-")
 	}
 
-	var s = f(evt[p])
+}
 
-	if len(s) > 0 {
-		if buf.Len() > 0 {
-			buf.WriteByte(' ') // Write space only if not the first part
-		}
-		buf.WriteString(s)
-	}
+func (m *consoleHandler) writeTag(buf *bytes.Buffer, attr slog.Attr) {
+	buf.WriteString(" ")
+	timeCol.Fprint(buf, attr.Key)
+	darkCol.Fprint(buf, "=")
+	tagCol.Fprint(buf, attr.Value.String())
+}
+
+func (t consoleHandler) writeMsg(buf *bytes.Buffer, msg string) {
+	buf.WriteString(msg)
+}
+
+func parseFormat(v string) {
+	//parts := strings.Split(v, "")
 }
